@@ -272,11 +272,13 @@ button { font-family: inherit; }
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
+    table-layout: fixed;
 }
 #ordersGrid {
-    table-layout: fixed;
-    width: 100%;
     min-width: 1280px;
+}
+#ctiGrid {
+    min-width: 1050px;
 }
 .data-table thead {
     position: sticky; top: 0; z-index: 10;

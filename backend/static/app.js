@@ -215,6 +215,8 @@ function initSetOrderTab() {
 
     // Submit Order
     document.getElementById("btnSubmitOrder").addEventListener("click", submitOrder);
+
+    makeTableResizable("basketTable", "ss_basket_col_widths");
 }
 
 async function searchCustomersInline(query) {
@@ -325,6 +327,7 @@ function renderBasket() {
     });
 
     recalcBasket();
+    makeTableResizable("basketTable", "ss_basket_col_widths");
 }
 
 function recalcBasket() {
@@ -751,6 +754,7 @@ function initCustomersTab() {
     document.getElementById("btnNewCustomer").addEventListener("click", clearCustomerForm);
     document.getElementById("btnSaveCustomer").addEventListener("click", saveCustomer);
     document.getElementById("btnDeleteCustomer").addEventListener("click", deleteCustomer);
+    makeTableResizable("customersGrid", "ss_customer_col_widths");
 }
 
 async function loadCustomers(query = "") {
@@ -784,6 +788,7 @@ async function loadCustomers(query = "") {
             });
             tbody.appendChild(tr);
         });
+        makeTableResizable("customersGrid", "ss_customer_col_widths");
     } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" class="text-center empty-msg" style="color:red;">오류: ${err.message}</td></tr>`;
     }
@@ -888,6 +893,7 @@ function initProductsTab() {
     document.getElementById("btnNewProduct").addEventListener("click", clearProductForm);
     document.getElementById("btnSaveProduct").addEventListener("click", saveProduct);
     document.getElementById("btnDeleteProduct").addEventListener("click", deleteProduct);
+    makeTableResizable("productsGrid", "ss_product_col_widths");
 }
 
 async function loadProducts() {
@@ -932,6 +938,7 @@ function renderProductsGrid(products) {
 
         tbody.appendChild(tr);
     });
+    makeTableResizable("productsGrid", "ss_product_col_widths");
 }
 
 function filterProductsGrid() {
@@ -1049,6 +1056,7 @@ function initAccountsTab() {
     document.getElementById("btnNewAccount").addEventListener("click", clearAccountForm);
     document.getElementById("btnSaveAccount").addEventListener("click", saveAccount);
     document.getElementById("btnDeleteAccount").addEventListener("click", deleteAccount);
+    makeTableResizable("accountsGrid", "ss_account_col_widths");
 }
 
 async function loadAccounts() {
@@ -1089,6 +1097,7 @@ function renderAccountsGrid(accounts) {
         });
         tbody.appendChild(tr);
     });
+    makeTableResizable("accountsGrid", "ss_account_col_widths");
 }
 
 function updateAccountFilterOptions(accounts) {
@@ -1227,6 +1236,8 @@ function initCtiTab() {
         ctiCurrentPage++;
         loadCtiTmList();
     });
+
+    makeTableResizable("ctiGrid", "ss_cti_col_widths");
 }
 
 async function loadCtiDbs() {
@@ -1329,6 +1340,7 @@ function renderCtiGrid(items) {
         tr.querySelector(".btn-cti-call").addEventListener("click", () => openCtiResultModal(item));
         tbody.appendChild(tr);
     });
+    makeTableResizable("ctiGrid", "ss_cti_col_widths");
 }
 
 function openCtiResultModal(item) {
@@ -1425,6 +1437,7 @@ function renderModalProducts(products) {
 
         tbody.appendChild(tr);
     });
+    makeTableResizable("modalProductsGrid", "ss_modal_prod_col_widths");
 }
 
 function filterModalProducts() {
