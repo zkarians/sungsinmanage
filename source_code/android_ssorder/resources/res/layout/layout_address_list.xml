@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="horizontal" android:paddingLeft="10dp" android:paddingTop="5dp" android:paddingRight="10dp" android:paddingBottom="5dp" android:focusable="true" android:clickable="false" android:longClickable="false" android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false" android:weightSum="1">
+    <RelativeLayout android:id="@+id/button" android:background="@drawable/corner_cell_highlight_blue2" android:focusableInTouchMode="false" android:clickable="true" android:longClickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="10dp">
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_margin="5dp" android:text="우편번호"/>
+                <TextView android:id="@+id/tv_address_postcode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:id="@+id/textView9" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_margin="5dp" android:text="도로명 주소"/>
+                <TextView android:id="@+id/tv_address_road" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_margin="5dp" android:text="지번 주소"/>
+                <TextView android:id="@+id/tv_address_dong" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

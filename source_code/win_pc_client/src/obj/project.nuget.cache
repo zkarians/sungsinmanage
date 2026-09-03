@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "5gymobYMXEk=",
+  "success": true,
+  "projectFilePath": "D:\\Gemini\\성신판매접수\\source_code\\win_pc_client\\src\\mlas.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.bcl.hashcode\\6.0.0\\microsoft.bcl.hashcode.6.0.0.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net48\\1.0.3\\microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.buffers\\4.6.1\\system.buffers.4.6.1.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.collections.immutable\\10.0.11\\system.collections.immutable.10.0.11.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.formats.nrbf\\10.0.11\\system.formats.nrbf.10.0.11.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.memory\\4.6.3\\system.memory.4.6.3.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.numerics.vectors\\4.6.1\\system.numerics.vectors.4.6.1.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.reflection.metadata\\10.0.11\\system.reflection.metadata.10.0.11.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.resources.extensions\\10.0.11\\system.resources.extensions.10.0.11.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.1.2\\system.runtime.compilerservices.unsafe.6.1.2.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.valuetuple\\4.6.2\\system.valuetuple.4.6.2.nupkg.sha512"
+  ],
+  "logs": []
+}

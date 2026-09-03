@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="horizontal" android:paddingLeft="10dp" android:paddingTop="5dp" android:paddingRight="10dp" android:paddingBottom="5dp" android:focusable="true" android:clickable="false" android:longClickable="false" android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false" android:weightSum="1">
+    <RelativeLayout android:id="@+id/button" android:background="@drawable/corner_cell_highlight_blue2" android:focusableInTouchMode="false" android:clickable="false" android:longClickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:paddingTop="10dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="10dp" android:layout_marginTop="10dp" android:layout_marginRight="10dp" android:layout_marginBottom="10dp" android:layout_marginStart="10dp" android:layout_marginEnd="10dp">
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="주문날짜"/>
+                <TextView android:id="@+id/tv_order_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="접수상태"/>
+                <TextView android:id="@+id/tv_order_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:id="@+id/textView9" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="주문번호"/>
+                <TextView android:id="@+id/tv_order_index" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <FrameLayout android:background="@color/Gray500" android:layout_width="match_parent" android:layout_height="0.5sp" android:layout_margin="5dp"/>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="고객번호"/>
+                <TextView android:id="@+id/tv_order_cuscode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="고객명"/>
+                <TextView android:id="@+id/tv_order_cusname" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="자택전화"/>
+                <TextView android:id="@+id/tv_order_cuscall" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="휴대전화"/>
+                <TextView android:id="@+id/tv_order_cusphone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <FrameLayout android:background="@color/Gray500" android:layout_width="match_parent" android:layout_height="0.5sp" android:layout_margin="5dp"/>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="배송지주소"/>
+                <TextView android:id="@+id/tv_order_cusdelivery" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="송장번호"/>
+                <TextView android:id="@+id/tv_order_delivery" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:id="@+id/aasdfq" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="품목"/>
+                <TextView android:id="@+id/tv_order_product_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="총 금액"/>
+                <TextView android:id="@+id/tv_order_product_price" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <FrameLayout android:background="@color/Gray500" android:layout_width="match_parent" android:layout_height="0.5sp" android:layout_margin="5dp"/>
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView android:textColor="@color/Blue" android:gravity="right" android:layout_width="70dp" android:layout_height="wrap_content" android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="10dp" android:layout_marginBottom="5dp" android:text="비고"/>
+                <TextView android:id="@+id/tv_order_etc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="5dp"/>
+            </LinearLayout>
+            <Button android:textColor="#ffffff" android:id="@+id/btn_cancel" android:background="@drawable/button_roll" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="발송전 취소"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

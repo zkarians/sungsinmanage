@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>성신판매접수 관리자 v3.18</title>
+    <link rel="stylesheet" href="/static/style.css?v=5">
+    <script src="/static/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<!-- 1. LOGIN OVERLAY -->
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-box">
+        <div class="login-header">
+            <span class="login-title">성신판매접수 관리자 v3.18</span>
+        </div>
+        <div class="login-server-bar">
+            <span>서버주소:</span>
+            <span class="server-url">http://localhost:5000/ (PostgreSQL Core)</span>
+        </div>
+        <div class="login-body">
+            <div class="form-group">
+                <label>아이디</label>
+                <input type="text" id="loginId" value="이승철" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>암호</label>
+                <input type="password" id="loginPw" value="z456qwe12!@" autocomplete="current-password">
+            </div>
+            <div class="login-options">
+                <label><input type="checkbox" id="saveId" checked> 아이디 저장</label>
+                <label><input type="checkbox" id="autoLogin"> 자동 로그인</label>
+            </div>
+            <div id="loginError" class="login-error"></div>
+            <button id="btnLogin" class="btn-primary btn-block">접 속</button>
+        </div>
+        <div class="login-footer">
+            기술지원: 성신 판매접수 시스템 v3.18
+        </div>
+    </div>
+</div>
+
+<!-- 2. MAIN APPLICATION -->
+<div id="appContainer" class="app-container hidden">
+    <!-- Top System Bar -->
+    <header class="top-bar">
+        <div class="brand">
+            <span class="app-logo">★</span>
+            <span class="app-title">성신판매접수 관리자 v3.18</span>
+        </div>
+        <div class="user-status-bar">
+            <span id="headerUserInfo" class="user-badge">[사원이름 - ] [소속구분 - ]</span>
+            <span id="serverStatus" class="status-indicator">● 로컬서버 정상 연결됨</span>
+            <button id="btnLogout" class="btn-logout">로그아웃</button>
+        </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="tabSetOrder">📦 주문 접수</button>
+        <button class="tab-btn" data-tab="tabOrders">📋 주문 관리 / 조회</button>
+        <button class="tab-btn" data-tab="tabCustomers">👥 고객 관리</button>
+        <button class="tab-btn" data-tab="tabProducts">🏷️ 제품 / 재고 관리</button>
+        <button class="tab-btn" data-tab="tabAccounts">🔑 사원 / 계정 관리</button>
+        <button class="tab-btn" data-tab="tabCti">📞 CTI 상담 관리</button>
+    </nav>
+
+    <!-- TAB CONTENTS -->
+    <main class="tab-content-area">
+
+        <!-- ==================== TAB 1: 주문 접수 ==================== -->
+        <section id="tabSetOrder" class="tab-pane active">
+            <div class="pane-grid-2col">
+                <!-- Left: Customer & Delivery Info -->
+                <div class="panel-box">
+                    <div class="panel-header">고객 정보 및 배송지 입력</div>
+                    <div class="panel-body">
+                        <div class="search-inline">
+                            <input type="text" id="orderCusSearch" placeholder="고객명 또는 전화번호 실시간 검색...">
+                            <button id="btnSearchCusInOrder" class="btn-secondary">검색</button>
+                        </div>
+                        <div id="cusSearchResults" class="search-dropdown hidden"></div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>고객명 <span class="req">*</span></label>
+                                <input type="text" id="orderCusName">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>고객코드</label>
+                                <input type="text" id="orderCusCode" readonly placeholder="신규 자동생성">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>일반전화</label>
+                                <input type="text" id="orderCusCall" placeholder="02-123-4567">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>휴대전화</label>
+                                <input type="text" id="orderCusPhone" placeholder="010-1234-5678">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>배송지 주소 <span class="req">*</span></label>
+                            <div class="input-btn-group">
+                                <input type="text" id="orderAddress" placeholder="기본 주소 (도로명/지번)">
+                                <button id="btnSearchZip" class="btn-sub">주소 검색</button>
+                            </div>
+                            <input type="text" id="orderAddressDetail" placeholder="상세 주소 (동/호수, 층수 등)" style="margin-top: 5px;">
+                        </div>
+                        <div class="form-group">
+                            <label>배송처 / 배송구분</label>
+                            <input type="text" id="orderDelivery" placeholder="직배 / 택배 / 기타 배송처">
+                        </div>
+                        <div class="form-group">
+                            <label>비고 및 전달사항</label>
+                            <textarea id="orderEtc" rows="2" placeholder="배송 메모, 특이사항 입력..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Product Selection & Order Basket -->
+                <div class="panel-box">
+                    <div class="panel-header">주문 상품 선택 (체크된 상품이 접수됩니다)</div>
+                    <div class="panel-body">
+                        <div class="search-inline">
+                            <input type="text" id="orderProductSearch" placeholder="제품명 또는 제품코드 검색...">
+                            <button id="btnOpenProductModal" class="btn-secondary">제품 목록 전체보기</button>
+                        </div>
+
+                        <!-- Selected Items Table -->
+                        <div class="table-container basket-table-wrap">
+                            <table class="data-table" id="basketTable">
+                                <thead>
+                                    <tr>
+                                        <th width="40"><input type="checkbox" id="checkAllBasket" checked></th>
+                                        <th>제품코드</th>
+                                        <th>제품명</th>
+                                        <th width="90">단가(원)</th>
+                                        <th width="70">수량</th>
+                                        <th width="100">합계(원)</th>
+                                        <th width="70">현재재고</th>
+                                        <th width="50">삭제</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="basketTableBody">
+                                    <tr><td colspan="8" class="text-center empty-msg">상품을 추가해주세요.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Order Summary & Submit -->
+                        <div class="order-summary-box">
+                            <div class="summary-line">
+                                <span>선택 상품: <strong id="basketCount">0</strong>건</span>
+                                <span>총 주문금액: <strong id="basketTotalPrice" class="price-highlight">0</strong>원</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button id="btnResetOrder" class="btn-cancel">주문 초기화</button>
+                                <button id="btnSubmitOrder" class="btn-primary btn-large">📦 주문 접수 완료</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: 주문 관리 / 조회 ==================== -->
+        <section id="tabOrders" class="tab-pane">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label>조회 기간:</label>
+                    <input type="date" id="orderDateFrom">
+                    <span>~</span>
+                    <input type="date" id="orderDateTo">
+                </div>
+                <div class="filter-item">
+                    <label>상태:</label>
+                    <select id="orderStatusFilter">
+                        <option value="all">전체 상태</option>
+                        <option value="1">1: 접수완료</option>
+                        <option value="2">2: 배송중</option>
+                        <option value="3">3: 취소</option>
+                        <option value="4">4: 반품</option>
+                        <option value="0">0: 접수대기</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>사원:</label>
+                    <select id="orderAccountFilter">
+                        <option value="">전체 사원</option>
+                    </select>
+                </div>
+                <div class="filter-item search-box">
+                    <input type="text" id="orderListSearch" placeholder="고객명, 연락처, 주소 검색...">
+                    <button id="btnSearchOrders" class="btn-primary">조회</button>
+                </div>
+                <div class="filter-item export-group">
+                    <button id="btnExportExcel" class="btn-excel">📊 엑셀 다운로드</button>
+                </div>
+            </div>
+
+            <!-- Orders Data Grid -->
+            <div class="table-container main-grid-wrap">
+                <table class="data-table" id="ordersGrid">
+                    <thead>
+                        <tr>
+                            <th width="80" class="text-center">상태</th>
+                            <th width="65" class="text-center">주문번호</th>
+                            <th width="130">접수일시</th>
+                            <th width="75">담당사원</th>
+                            <th width="85">고객명</th>
+                            <th width="110">연락처</th>
+                            <th width="220">배송주소</th>
+                            <th width="240">주문상품</th>
+                            <th width="75">배송처</th>
+                            <th>비고</th>
+                            <th width="130" class="text-center">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersGridBody">
+                        <tr><td colspan="11" class="text-center loading-msg">주문 내역을 조회 중입니다...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid-footer">
+                <span>총 <strong id="orderTotalCount">0</strong>건이 조회되었습니다.</span>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: 고객 관리 ==================== -->
+        <section id="tabCustomers" class="tab-pane">
+            <div class="pane-grid-2col-split">
+                <!-- Customer List -->
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <span>등록 고객 목록</span>
+                        <div class="header-actions">
+                            <input type="text" id="cusSearchInput" placeholder="고객명, 전화번호 검색...">
+                            <button id="btnSearchCustomers" class="btn-secondary">검색</button>
+                        </div>
+                    </div>
+                    <div class="table-container cus-grid-wrap">
+                        <table class="data-table" id="customersGrid">
+                            <thead>
+                                <tr>
+                                    <th width="70">고객코드</th>
+                                    <th>고객명</th>
+                                    <th>일반전화</th>
+                                    <th>휴대전화</th>
+                                    <th>담당사원</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersGridBody">
+                                <tr><td colspan="5" class="text-center">고객 목록을 불러오는 중...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Customer Detail / Form -->
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <span id="cusFormTitle">고객 상세 정보 / 등록</span>
+                        <button id="btnNewCustomer" class="btn-sub">+ 신규 고객 등록</button>
+                    </div>
+                    <div class="panel-body">
+                        <input type="hidden" id="cusDetailCode">
+                        <div class="form-group">
+                            <label>고객명 <span class="req">*</span></label>
+                            <input type="text" id="cusDetailName">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>일반전화</label>
+                                <input type="text" id="cusDetailCall">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>휴대전화</label>
+                                <input type="text" id="cusDetailPhone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>주소</label>
+                            <input type="text" id="cusDetailAddress">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="btnDeleteCustomer" class="btn-danger hidden">삭제</button>
+                            <button id="btnSaveCustomer" class="btn-primary">저장하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: 제품 / 재고 관리 ==================== -->
+        <section id="tabProducts" class="tab-pane">
+            <div class="pane-grid-2col-split">
+                <!-- Product List -->
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <span>등록 제품 및 실시간 재고 현황</span>
+                        <div class="header-actions">
+                            <input type="text" id="productSearchInput" placeholder="제품명, 제품코드 검색...">
+                            <button id="btnFilterProducts" class="btn-secondary">검색</button>
+                        </div>
+                    </div>
+                    <div class="table-container prod-grid-wrap">
+                        <table class="data-table" id="productsGrid">
+                            <thead>
+                                <tr>
+                                    <th width="90">제품코드</th>
+                                    <th>제품명</th>
+                                    <th width="90">판매단가</th>
+                                    <th width="80">현재재고</th>
+                                    <th width="60">팀</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsGridBody">
+                                <tr><td colspan="5" class="text-center">제품 목록을 불러오는 중...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Product Detail / Form -->
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <span id="productFormTitle">제품 상세 정보 / 신규 등록</span>
+                        <button id="btnNewProduct" class="btn-sub">+ 신규 제품 등록</button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label>제품코드 <span class="req">*</span></label>
+                            <input type="text" id="prodDetailCode" placeholder="예: S001">
+                        </div>
+                        <div class="form-group">
+                            <label>제품명 <span class="req">*</span></label>
+                            <input type="text" id="prodDetailName" placeholder="제품명을 입력하세요">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>판매단가 (원)</label>
+                                <input type="number" id="prodDetailPrice" value="0">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>현재 재고수량</label>
+                                <input type="number" id="prodDetailStock" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>소속팀</label>
+                                <select id="prodDetailTeam">
+                                    <option value="1">1: 직판</option>
+                                    <option value="2">2: TM</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>구분코드</label>
+                                <input type="number" id="prodDetailGb" value="1">
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="btnDeleteProduct" class="btn-danger hidden">삭제</button>
+                            <button id="btnSaveProduct" class="btn-primary">제품 저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 5: 사원 / 계정 관리 ==================== -->
+        <section id="tabAccounts" class="tab-pane">
+            <div class="pane-grid-2col-split">
+                <!-- Account List -->
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <span>사원 및 관리자 계정 목록</span>
+                    </div>
+                    <div class="table-container acc-grid-wrap">
+                        <table class="data-table" id="accountsGrid">
+                            <thead>
+                                <tr>
+                                    <th width="60">코드</th>
+                                    <th>아이디</th>
+                                    <th>사원명</th>
+                                    <th>권한</th>
+                                    <th>소속팀</th>
+                                    <th>접속허용IP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accountsGridBody">
+                                <tr><td colspan="6" class="text-center">계정 목록을 불러오는 중...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Account Detail / Form -->
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <span id="accountFormTitle">계정 상세 정보 / 신규 등록</span>
+                        <button id="btnNewAccount" class="btn-sub">+ 신규 사원 등록</button>
+                    </div>
+                    <div class="panel-body">
+                        <input type="hidden" id="accDetailCode">
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>아이디 <span class="req">*</span></label>
+                                <input type="text" id="accDetailId">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>비밀번호 <span class="req">*</span></label>
+                                <input type="password" id="accDetailPw">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>사원 이름 <span class="req">*</span></label>
+                            <input type="text" id="accDetailName">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>권한 구분</label>
+                                <select id="accDetailAcgb">
+                                    <option value="1">1: 관리자</option>
+                                    <option value="2" selected>2: 일반사원</option>
+                                    <option value="3">3: 최고관리자</option>
+                                    <option value="4">4: 재고관리자</option>
+                                    <option value="5">5: 루트계정</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>소속 팀</label>
+                                <select id="accDetailTeam">
+                                    <option value="1">1: 직판</option>
+                                    <option value="2" selected>2: TM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>접속 허용 IP (비워두면 모든 IP 허용)</label>
+                            <input type="text" id="accDetailIp" placeholder="예: 220.77.24.6">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="btnDeleteAccount" class="btn-danger hidden">계정 삭제</button>
+                            <button id="btnSaveAccount" class="btn-primary">계정 저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 6: CTI 상담 관리 ==================== -->
+        <section id="tabCti" class="tab-pane">
+            <div class="cti-container">
+                <!-- CTI DB Top Selector -->
+                <div class="filter-bar cti-db-bar">
+                    <div class="filter-item">
+                        <label>CTI DB 선택:</label>
+                        <select id="ctiDbSelect">
+                            <option value="">DB 선택...</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span id="ctiDbStats" class="badge-info">총: 0건 | 미배분: 0건 | 블랙리스트: 0건</span>
+                    </div>
+                    <div class="filter-item search-box">
+                        <input type="text" id="ctiSearchInput" placeholder="고객명 또는 전화번호 검색...">
+                        <button id="btnSearchCti" class="btn-primary">검색</button>
+                    </div>
+                </div>
+
+                <!-- CTI TM List Grid -->
+                <div class="table-container cti-grid-wrap">
+                    <table class="data-table" id="ctiGrid">
+                        <thead>
+                            <tr>
+                                <th width="60">번호</th>
+                                <th width="100">고객명</th>
+                                <th width="120">휴대전화</th>
+                                <th width="110">일반전화</th>
+                                <th>관심제품</th>
+                                <th width="90">통화결과</th>
+                                <th width="70">통화횟수</th>
+                                <th>상담 메모</th>
+                                <th width="90">상담처리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ctiGridBody">
+                            <tr><td colspan="9" class="text-center">상단에서 CTI DB를 선택해주세요.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-footer pagination-footer">
+                    <button id="btnCtiPrev" class="btn-sub">이전 페이지</button>
+                    <span id="ctiPageIndicator">1 / 1</span>
+                    <button id="btnCtiNext" class="btn-sub">다음 페이지</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- 3. MODALS -->
+<!-- Product Selection Modal -->
+<div id="productModal" class="modal-overlay hidden">
+    <div class="modal-box modal-large">
+        <div class="modal-header">
+            <h3>제품 선택 (더블클릭 또는 선택 버튼을 누르면 주문에 추가됩니다)</h3>
+            <button class="modal-close" data-close="productModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="filter-bar">
+                <input type="text" id="modalProductSearch" placeholder="제품코드, 제품명 실시간 검색...">
+            </div>
+            <div class="table-container" style="max-height: 400px;">
+                <table class="data-table" id="modalProductsGrid">
+                    <thead>
+                        <tr>
+                            <th width="90">제품코드</th>
+                            <th>제품명</th>
+                            <th width="100">단가(원)</th>
+                            <th width="80">현재재고</th>
+                            <th width="70">선택</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalProductsGridBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Detail / Edit Modal -->
+<div id="orderDetailModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>주문 상세 정보 / 수정</h3>
+            <button class="modal-close" data-close="orderDetailModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalOrderIndex">
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label>주문번호</label>
+                    <input type="text" id="modalOrderIndexDisplay" readonly>
+                </div>
+                <div class="form-group flex-1">
+                    <label>접수일시</label>
+                    <input type="text" id="modalOrderDate" readonly>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label>고객명</label>
+                    <input type="text" id="modalOrderCusName" readonly>
+                </div>
+                <div class="form-group flex-1">
+                    <label>연락처</label>
+                    <input type="text" id="modalOrderPhone" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>배송주소</label>
+                <input type="text" id="modalOrderAddress">
+            </div>
+            <div class="form-group">
+                <label>배송처</label>
+                <input type="text" id="modalOrderDelivery">
+            </div>
+            <div class="form-group">
+                <label>주문 비고 및 요청사항</label>
+                <textarea id="modalOrderEtc" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>주문 상품 내역</label>
+                <div id="modalOrderProducts" class="product-pills-box"></div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-cancel modal-close" data-close="orderDetailModal">닫기</button>
+                <button id="btnSaveOrderEdit" class="btn-primary">수정사항 저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTI Call Result Modal -->
+<div id="ctiResultModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>📞 CTI 상담 결과 기록</h3>
+            <button class="modal-close" data-close="ctiResultModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalCtiIdx">
+            <div class="form-group">
+                <label>고객명: <strong id="modalCtiCusName">-</strong></label>
+                <label>전화번호: <strong id="modalCtiPhone">-</strong></label>
+            </div>
+            <div class="form-group">
+                <label>통화 결과 구분 <span class="req">*</span></label>
+                <select id="modalCtiResultCode">
+                    <option value="1">1: 동의 (주문접수 가능)</option>
+                    <option value="2">2: 무관심</option>
+                    <option value="3">3: TM거부</option>
+                    <option value="4">4: 무응답 / 부재중</option>
+                    <option value="5">5: 통화중</option>
+                    <option value="6">6: 통화예약</option>
+                    <option value="7">7: 결번</option>
+                    <option value="8">8: 본인아님</option>
+                    <option value="0">0: 미처리</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>상담 메모</label>
+                <textarea id="modalCtiComment" rows="3" placeholder="상담 내용 상세 기록..."></textarea>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-cancel modal-close" data-close="ctiResultModal">취소</button>
+                <button id="btnSaveCtiResult" class="btn-primary">기록 저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/app.js?v=5"></script>
+</body>
+</html>

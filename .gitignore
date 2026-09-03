@@ -1,0 +1,30 @@
+﻿# Big database dumps (>100MB)
+database/*.sql
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+env/
+
+# SSL certificates / private keys
+backend/ssl/*.key
+backend/ssl/*.crt
+
+# Windows / OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Temp files
+*.tmp
+screen_capture.png

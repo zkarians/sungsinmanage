@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:id="@+id/container" android:layout_width="match_parent" android:layout_height="wrap_content" android:windowSoftInputMode="adjustPan">
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@+id/ll" android:background="?android:attr/windowBackground" android:layout_width="match_parent" android:layout_height="match_parent">
+            <TextView android:textSize="20sp" android:textColor="#000000" android:gravity="center_vertical" android:id="@+id/title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="20dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp" android:layout_marginBottom="20dp" android:text="성신 판매접수" android:layout_weight="1" android:layout_marginStart="20dp" android:layout_marginEnd="20dp"/>
+            <TextView android:textColor="@drawable/txt_white_bg" android:id="@+id/btn_main_logout" android:background="@drawable/corner_cell_red" android:padding="10dp" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="20dp" android:text="로그아웃"/>
+        </LinearLayout>
+        <FrameLayout android:background="@color/Gray500" android:layout_width="match_parent" android:layout_height="1sp"/>
+    </LinearLayout>
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+            <FrameLayout android:id="@+id/content" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_weight="1">
+                <ViewFlipper android:id="@+id/mainViewFlipper" android:layout_width="match_parent" android:layout_height="match_parent">
+                    <include android:id="@+id/relative0order" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/vf_setorder"/>
+                    <include android:id="@+id/relative1product" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/vf_product"/>
+                    <include android:id="@+id/relative2cusSearch" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/vf_customer_search"/>
+                    <include android:id="@+id/relative3getorder" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/vf_getorder"/>
+                    <include android:id="@+id/relative4Home" android:layout_width="wrap_content" android:layout_height="match_parent" layout="@layout/vf_home"/>
+                    <include android:id="@+id/relative5address" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/vf_address"/>
+                    <include android:id="@+id/relative6result" android:layout_width="wrap_content" android:layout_height="454dp" layout="@layout/vf_result"/>
+                    <include android:id="@+id/relative7progress" android:layout_width="wrap_content" android:layout_height="454dp" layout="@layout/vf_progress"/>
+                </ViewFlipper>
+            </FrameLayout>
+            <android.support.design.widget.BottomNavigationView android:layout_gravity="bottom" android:id="@+id/navigation" android:background="?android:attr/windowBackground" android:layout_width="match_parent" android:layout_height="wrap_content" app:menu="@menu/navigation"/>
+        </LinearLayout>
+        <ProgressBar android:id="@+id/progressBar" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" android:layout_centerVertical="true" android:layout_alignParentStart="true" android:layout_alignParentEnd="true" style="?android:attr/progressBarStyle"/>
+    </RelativeLayout>
+</LinearLayout>

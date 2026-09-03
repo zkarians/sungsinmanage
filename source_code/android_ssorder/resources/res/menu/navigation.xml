@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt">
+    <item android:icon="@drawable/ic_home_black_24dp" android:id="@+id/navigation_home" android:title="홈"/>
+    <item android:icon="@drawable/ic_create_black_24dp" android:id="@+id/navigation_dashboard" android:title="주문접수"/>
+    <item android:icon="@drawable/icon_ol" android:id="@+id/navigation_notifications" android:title="조회"/>
+</menu>
