@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css?v=13">
+    <link rel="stylesheet" href="/static/style.css?v=14">
     <script src="/static/xlsx.full.min.js"></script>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
@@ -312,15 +312,17 @@
                         <table class="data-table" id="productsGrid">
                             <thead>
                                 <tr>
-                                    <th width="90">제품코드</th>
+                                    <th width="35" class="text-center"><input type="checkbox" id="checkAllProducts"></th>
+                                    <th width="80" class="text-center">제품코드</th>
+                                    <th width="75" class="text-center">소속구분</th>
+                                    <th width="75" class="text-center">제품구분</th>
                                     <th>제품명</th>
-                                    <th width="90">판매단가</th>
-                                    <th width="80">현재재고</th>
-                                    <th width="60">팀</th>
+                                    <th width="90" class="text-right">가격</th>
+                                    <th width="70" class="text-center">재고</th>
                                 </tr>
                             </thead>
                             <tbody id="productsGridBody">
-                                <tr><td colspan="5" class="text-center">제품 목록을 불러오는 중...</td></tr>
+                                <tr><td colspan="7" class="text-center">제품 목록을 불러오는 중...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -353,15 +355,18 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group flex-1">
-                                <label>소속팀</label>
+                                <label>소속구분</label>
                                 <select id="prodDetailTeam">
-                                    <option value="1">1: 직판</option>
-                                    <option value="2">2: TM</option>
+                                    <option value="1">직판</option>
+                                    <option value="2">TM</option>
                                 </select>
                             </div>
                             <div class="form-group flex-1">
-                                <label>구분코드</label>
-                                <input type="number" id="prodDetailGb" value="1">
+                                <label>제품구분</label>
+                                <select id="prodDetailGb">
+                                    <option value="1">본품</option>
+                                    <option value="2">사례</option>
+                                </select>
                             </div>
                         </div>
                         <div class="action-buttons">
@@ -522,11 +527,13 @@
                 <table class="data-table" id="modalProductsGrid">
                     <thead>
                         <tr>
-                            <th width="90">제품코드</th>
+                            <th width="75">제품코드</th>
+                            <th width="65" class="text-center">소속</th>
+                            <th width="65" class="text-center">구분</th>
                             <th>제품명</th>
-                            <th width="100">단가(원)</th>
-                            <th width="80">현재재고</th>
-                            <th width="70">선택</th>
+                            <th width="90" class="text-right">가격</th>
+                            <th width="65" class="text-center">재고</th>
+                            <th width="60" class="text-center">선택</th>
                         </tr>
                     </thead>
                     <tbody id="modalProductsGridBody"></tbody>
@@ -643,6 +650,6 @@
     </div>
 </div>
 
-<script src="/static/app.js?v=13"></script>
+<script src="/static/app.js?v=14"></script>
 </body>
 </html>

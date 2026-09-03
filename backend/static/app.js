@@ -1051,6 +1051,13 @@ function initProductsTab() {
     document.getElementById("btnFilterProducts").addEventListener("click", filterProductsGrid);
     document.getElementById("productSearchInput").addEventListener("input", filterProductsGrid);
 
+    const checkAll = document.getElementById("checkAllProducts");
+    if (checkAll) {
+        checkAll.addEventListener("change", (e) => {
+            document.querySelectorAll(".product-item-check").forEach(c => c.checked = e.target.checked);
+        });
+    }
+
     document.getElementById("btnNewProduct").addEventListener("click", clearProductForm);
     document.getElementById("btnSaveProduct").addEventListener("click", saveProduct);
     document.getElementById("btnDeleteProduct").addEventListener("click", deleteProduct);
@@ -1073,7 +1080,7 @@ function renderProductsGrid(products) {
     tbody.innerHTML = "";
 
     if (!products || products.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center empty-msg">등록된 제품이 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center empty-msg">등록된 제품이 없습니다.</td></tr>`;
         return;
     }
 
@@ -1081,20 +1088,25 @@ function renderProductsGrid(products) {
         const tr = document.createElement("tr");
         const price = parseInt(p.product_price) || 0;
         const stock = parseInt(p.product_stock) || 0;
-        const teamLabel = p.team_code === 1 ? "직판" : "TM";
+        const teamLabel = (p.team_code == 2) ? "TM" : "직판";
+        const gbLabel = (p.gb_code == 2) ? "사례" : "본품";
 
         tr.innerHTML = `
-            <td><strong>${p.product_code}</strong></td>
-            <td>${p.product_name}</td>
-            <td class="text-right">${price.toLocaleString()}원</td>
-            <td class="text-center ${stock <= 5 ? "font-bold text-danger" : ""}">${stock.toLocaleString()}</td>
+            <td class="text-center"><input type="checkbox" class="product-item-check" data-code="${p.product_code}"></td>
+            <td class="text-center font-bold">${p.product_code}</td>
             <td class="text-center">${teamLabel}</td>
+            <td class="text-center">${gbLabel}</td>
+            <td><strong>${p.product_name}</strong></td>
+            <td class="text-right font-bold" style="color: #0f4c5c;">₩${price.toLocaleString()}</td>
+            <td class="text-center ${stock <= 5 ? "font-bold text-danger" : ""}">${stock.toLocaleString()}</td>
         `;
 
-        tr.addEventListener("click", () => {
-            document.querySelectorAll("#productsGrid tr").forEach(r => r.classList.remove("selected"));
-            tr.classList.add("selected");
-            populateProductForm(p);
+        tr.addEventListener("click", (e) => {
+            if (e.target.type !== "checkbox") {
+                document.querySelectorAll("#productsGrid tr").forEach(r => r.classList.remove("selected"));
+                tr.classList.add("selected");
+                populateProductForm(p);
+            }
         });
 
         tbody.appendChild(tr);
@@ -1571,7 +1583,7 @@ function renderModalProducts(products) {
     tbody.innerHTML = "";
 
     if (!products || products.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center empty-msg">제품이 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center empty-msg">제품이 없습니다.</td></tr>`;
         return;
     }
 
@@ -1579,12 +1591,16 @@ function renderModalProducts(products) {
         const tr = document.createElement("tr");
         const price = parseInt(p.product_price) || 0;
         const stock = parseInt(p.product_stock) || 0;
+        const teamLabel = (p.team_code == 2) ? "TM" : "직판";
+        const gbLabel = (p.gb_code == 2) ? "사례" : "본품";
 
         tr.innerHTML = `
-            <td><strong>${p.product_code}</strong></td>
-            <td>${p.product_name}</td>
-            <td class="text-right">${price.toLocaleString()}원</td>
-            <td class="text-center">${stock.toLocaleString()}</td>
+            <td class="text-center font-bold">${p.product_code}</td>
+            <td class="text-center">${teamLabel}</td>
+            <td class="text-center">${gbLabel}</td>
+            <td><strong>${p.product_name}</strong></td>
+            <td class="text-right font-bold" style="color: #0f4c5c;">₩${price.toLocaleString()}</td>
+            <td class="text-center ${stock <= 5 ? "font-bold text-danger" : ""}">${stock.toLocaleString()}</td>
             <td class="text-center"><button class="btn-primary btn-sm btn-pick-product">선택</button></td>
         `;
 
