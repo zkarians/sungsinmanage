@@ -690,60 +690,97 @@ function parseLegacyProducts(raw) {
     return items;
 }
 
-function openZipcodeSearch(baseInputId, detailInputId) {
-    const modal = document.getElementById("zipcodeModal");
-    const container = document.getElementById("zipcodeEmbedLayer");
-    container.innerHTML = "";
-    modal.classList.remove("hidden");
-
-    if (typeof daum === "undefined" || !daum.Postcode) {
-        alert("우편번호 검색 모듈을 불러오지 못했습니다. 인터넷 연결을 확인해주세요.");
-        modal.classList.add("hidden");
+function loadDaumPostcodeScript(callback) {
+    if (typeof daum !== "undefined" && daum.Postcode) {
+        callback();
         return;
     }
+    const existing = document.getElementById("daum_postcode_script");
+    if (existing) {
+        existing.onload = callback;
+        return;
+    }
+    const script = document.createElement("script");
+    script.id = "daum_postcode_script";
+    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.onload = callback;
+    script.onerror = () => {
+        alert("우체국 우편번호 검색 서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.");
+    };
+    document.head.appendChild(script);
+}
 
-    new daum.Postcode({
-        oncomplete: function(data) {
-            // 1. 기본 도로명/지번 주소 선택
-            let baseAddr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
-            if (!baseAddr) baseAddr = data.roadAddress || data.jibunAddress;
+function openZipcodeSearch(baseInputId, detailInputId) {
+    loadDaumPostcodeScript(() => {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 1. 기본 도로명/지번 주소 선택
+                let baseAddr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
+                if (!baseAddr) baseAddr = data.roadAddress || data.jibunAddress;
 
-            // 2. 동, 읍, 면, 아파트/건물명 등 참고항목 조합
-            let extraAddr = "";
-            if (data.userSelectedType === "R") {
-                if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-                    extraAddr += data.bname;
+                // 2. 동, 읍, 면, 아파트/건물명 등 참고항목 조합
+                let extraAddr = "";
+                if (data.userSelectedType === "R") {
+                    if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== "" && data.apartment === "Y") {
+                        extraAddr += (extraAddr !== "" ? ", " + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== "") {
+                        extraAddr = `(${extraAddr})`;
+                    }
                 }
-                if (data.buildingName !== "" && data.apartment === "Y") {
-                    extraAddr += (extraAddr !== "" ? ", " + data.buildingName : data.buildingName);
+
+                // 3. 우체국 5자리 우편번호와 기본주소 결합: (우)12345 서울특별시 ...
+                const formattedAddr = `(우)${data.zonecode} ${baseAddr}${extraAddr ? " " + extraAddr : ""}`;
+
+                // 4. 기본 주소 칸에 입력
+                const baseInput = document.getElementById(baseInputId);
+                if (baseInput) {
+                    baseInput.value = formattedAddr;
                 }
-                if (extraAddr !== "") {
-                    extraAddr = `(${extraAddr})`;
+
+                // 5. 모달이 열려있다면 닫기
+                const modal = document.getElementById("zipcodeModal");
+                if (modal) modal.classList.add("hidden");
+
+                // 6. 나머지 주소 (상세주소) 입력창으로 자동 포커스 이동!
+                const detailInput = document.getElementById(detailInputId);
+                if (detailInput) {
+                    detailInput.focus();
+                    detailInput.select();
                 }
+            },
+            width: 500,
+            height: 600
+        }).open();
+    });
+}
+
+function initModals() {
+    // Universal modal close handler
+    document.querySelectorAll(".modal-close").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const modalId = btn.getAttribute("data-close");
+            if (modalId) {
+                const target = document.getElementById(modalId);
+                if (target) target.classList.add("hidden");
+            } else {
+                const parentModal = btn.closest(".modal-overlay");
+                if (parentModal) parentModal.classList.add("hidden");
             }
+        });
+    });
 
-            // 3. 우체국 5자리 우편번호와 기본주소 결합: (우)12345 서울특별시 ...
-            const formattedAddr = `(우)${data.zonecode} ${baseAddr}${extraAddr ? " " + extraAddr : ""}`;
-
-            // 4. 기본 주소 칸에 입력
-            const baseInput = document.getElementById(baseInputId);
-            if (baseInput) {
-                baseInput.value = formattedAddr;
+    // Close when clicking modal backdrop
+    document.querySelectorAll(".modal-overlay").forEach(overlay => {
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                overlay.classList.add("hidden");
             }
-
-            // 5. 모달 닫기
-            modal.classList.add("hidden");
-
-            // 6. 나머지 주소 (상세주소) 입력창으로 자동 포커스 이동!
-            const detailInput = document.getElementById(detailInputId);
-            if (detailInput) {
-                detailInput.focus();
-                detailInput.select();
-            }
-        },
-        width: "100%",
-        height: "100%"
-    }).embed(container);
+        });
+    });
 }
 
 function openOrderEditModal(o) {

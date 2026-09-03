@@ -380,6 +380,10 @@ button { font-family: inherit; }
     font-weight: bold;
 }
 
+.hidden {
+    display: none !important;
+}
+
 /* Modals */
 .modal-overlay {
     position: fixed; inset: 0;
