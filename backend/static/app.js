@@ -185,12 +185,13 @@ function initSetOrderTab() {
         searchCustomersInline(searchInput.value.trim());
     });
 
-    // Address Search (Mock / Daum Postcode)
+    // Real Daum/PostOffice Zipcode Search
     document.getElementById("btnSearchZip").addEventListener("click", () => {
-        const addr = prompt("검색할 도로명 또는 지번 주소를 입력하세요:", "서울특별시 ");
-        if (addr) {
-            document.getElementById("orderAddress").value = addr;
-            document.getElementById("orderAddressDetail").focus();
+        openZipcodeSearch("orderAddress", "orderAddressDetail");
+    });
+    document.getElementById("orderAddress").addEventListener("click", () => {
+        if (!document.getElementById("orderAddress").value) {
+            openZipcodeSearch("orderAddress", "orderAddressDetail");
         }
     });
 
@@ -689,13 +690,80 @@ function parseLegacyProducts(raw) {
     return items;
 }
 
+function openZipcodeSearch(baseInputId, detailInputId) {
+    const modal = document.getElementById("zipcodeModal");
+    const container = document.getElementById("zipcodeEmbedLayer");
+    container.innerHTML = "";
+    modal.classList.remove("hidden");
+
+    if (typeof daum === "undefined" || !daum.Postcode) {
+        alert("우편번호 검색 모듈을 불러오지 못했습니다. 인터넷 연결을 확인해주세요.");
+        modal.classList.add("hidden");
+        return;
+    }
+
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 1. 기본 도로명/지번 주소 선택
+            let baseAddr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
+            if (!baseAddr) baseAddr = data.roadAddress || data.jibunAddress;
+
+            // 2. 동, 읍, 면, 아파트/건물명 등 참고항목 조합
+            let extraAddr = "";
+            if (data.userSelectedType === "R") {
+                if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+                    extraAddr += data.bname;
+                }
+                if (data.buildingName !== "" && data.apartment === "Y") {
+                    extraAddr += (extraAddr !== "" ? ", " + data.buildingName : data.buildingName);
+                }
+                if (extraAddr !== "") {
+                    extraAddr = `(${extraAddr})`;
+                }
+            }
+
+            // 3. 우체국 5자리 우편번호와 기본주소 결합: (우)12345 서울특별시 ...
+            const formattedAddr = `(우)${data.zonecode} ${baseAddr}${extraAddr ? " " + extraAddr : ""}`;
+
+            // 4. 기본 주소 칸에 입력
+            const baseInput = document.getElementById(baseInputId);
+            if (baseInput) {
+                baseInput.value = formattedAddr;
+            }
+
+            // 5. 모달 닫기
+            modal.classList.add("hidden");
+
+            // 6. 나머지 주소 (상세주소) 입력창으로 자동 포커스 이동!
+            const detailInput = document.getElementById(detailInputId);
+            if (detailInput) {
+                detailInput.focus();
+                detailInput.select();
+            }
+        },
+        width: "100%",
+        height: "100%"
+    }).embed(container);
+}
+
 function openOrderEditModal(o) {
     document.getElementById("modalOrderIndex").value = o.index;
     document.getElementById("modalOrderIndexDisplay").value = `#${o.index}`;
     document.getElementById("modalOrderDate").value = o.order_date_str || "";
     document.getElementById("modalOrderCusName").value = o.cus_name || "";
     document.getElementById("modalOrderPhone").value = o.cus_phone || o.cus_call || "";
-    document.getElementById("modalOrderAddress").value = (o.order_address || "").replace("<other>", " ");
+
+    // Parse base address and detail address
+    const rawAddr = o.order_address || "";
+    if (rawAddr.includes("<other>")) {
+        const parts = rawAddr.split("<other>");
+        document.getElementById("modalOrderAddress").value = parts[0] || "";
+        document.getElementById("modalOrderAddressDetail").value = parts[1] || "";
+    } else {
+        document.getElementById("modalOrderAddress").value = rawAddr;
+        document.getElementById("modalOrderAddressDetail").value = "";
+    }
+
     document.getElementById("modalOrderDelivery").value = o.order_delivery || "";
     document.getElementById("modalOrderEtc").value = o.order_etc || "";
 
@@ -713,9 +781,15 @@ function openOrderEditModal(o) {
     document.getElementById("orderDetailModal").classList.remove("hidden");
 }
 
+document.getElementById("btnModalSearchZip").addEventListener("click", () => {
+    openZipcodeSearch("modalOrderAddress", "modalOrderAddressDetail");
+});
+
 document.getElementById("btnSaveOrderEdit").addEventListener("click", async () => {
     const orderId = document.getElementById("modalOrderIndex").value;
-    const address = document.getElementById("modalOrderAddress").value.trim();
+    const baseAddr = document.getElementById("modalOrderAddress").value.trim();
+    const detailAddr = document.getElementById("modalOrderAddressDetail").value.trim();
+    const address = detailAddr ? `${baseAddr}<other>${detailAddr}` : baseAddr;
     const delivery = document.getElementById("modalOrderDelivery").value.trim();
     const etc = document.getElementById("modalOrderEtc").value.trim();
 
