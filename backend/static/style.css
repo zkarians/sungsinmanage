@@ -269,7 +269,8 @@ button { font-family: inherit; }
 .cti-grid-wrap { height: calc(100vh - 210px); }
 
 .data-table {
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
     border-collapse: collapse;
     font-size: 12px;
     table-layout: fixed;

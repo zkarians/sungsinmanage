@@ -460,13 +460,19 @@ function makeTableResizable(tableId, storageKey) {
         savedWidths = JSON.parse(localStorage.getItem(storageKey) || "{}");
     } catch (e) {}
 
-    // Apply saved widths
+    // Explicitly fix every column to exact px so other columns NEVER auto-expand or shrink
+    let totalWidth = 0;
     ths.forEach((th, idx) => {
-        if (savedWidths[idx]) {
-            th.style.width = savedWidths[idx] + "px";
-        }
+        const w = savedWidths[idx] || th.offsetWidth || 100;
+        th.style.width = w + "px";
+        th.style.minWidth = w + "px";
+        th.style.maxWidth = w + "px";
+        totalWidth += w;
+    });
+    table.style.width = totalWidth + "px";
 
-        // Add resizer element if not already present
+    // Setup resizers
+    ths.forEach((th, idx) => {
         if (!th.querySelector(".resizer")) {
             const resizer = document.createElement("div");
             resizer.className = "resizer";
@@ -477,8 +483,14 @@ function makeTableResizable(tableId, storageKey) {
 
             const onMouseMove = (e) => {
                 const diff = e.pageX - startX;
-                const newWidth = Math.max(40, startWidth + diff);
+                const newWidth = Math.max(30, startWidth + diff);
                 th.style.width = newWidth + "px";
+                th.style.minWidth = newWidth + "px";
+                th.style.maxWidth = newWidth + "px";
+
+                let sum = 0;
+                ths.forEach(h => sum += (parseInt(h.style.width) || h.offsetWidth));
+                table.style.width = sum + "px";
             };
 
             const onMouseUp = () => {
@@ -486,10 +498,9 @@ function makeTableResizable(tableId, storageKey) {
                 document.removeEventListener("mousemove", onMouseMove);
                 document.removeEventListener("mouseup", onMouseUp);
 
-                // Save all column widths to localStorage
                 const currentWidths = {};
                 ths.forEach((h, i) => {
-                    currentWidths[i] = h.offsetWidth;
+                    currentWidths[i] = parseInt(h.style.width) || h.offsetWidth;
                 });
                 localStorage.setItem(storageKey, JSON.stringify(currentWidths));
             };
@@ -498,7 +509,7 @@ function makeTableResizable(tableId, storageKey) {
                 e.preventDefault();
                 e.stopPropagation();
                 startX = e.pageX;
-                startWidth = th.offsetWidth;
+                startWidth = parseInt(th.style.width) || th.offsetWidth;
                 resizer.classList.add("resizing");
                 document.addEventListener("mousemove", onMouseMove);
                 document.addEventListener("mouseup", onMouseUp);
