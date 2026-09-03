@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css?v=12">
+    <link rel="stylesheet" href="/static/style.css?v=13">
     <script src="/static/xlsx.full.min.js"></script>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
@@ -215,13 +215,14 @@
                             <th width="110">연락처</th>
                             <th width="220">배송주소</th>
                             <th width="240">주문상품</th>
+                            <th width="90" class="text-right">금액</th>
                             <th width="75">배송처</th>
                             <th>비고</th>
                             <th width="130" class="text-center">관리</th>
                         </tr>
                     </thead>
                     <tbody id="ordersGridBody">
-                        <tr><td colspan="11" class="text-center loading-msg">주문 내역을 조회 중입니다...</td></tr>
+                        <tr><td colspan="12" class="text-center loading-msg">주문 내역을 조회 중입니다...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -642,6 +643,6 @@
     </div>
 </div>
 
-<script src="/static/app.js?v=12"></script>
+<script src="/static/app.js?v=13"></script>
 </body>
 </html>

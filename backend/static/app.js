@@ -549,7 +549,7 @@ async function loadOrders() {
         await loadProducts();
     }
     const tbody = document.getElementById("ordersGridBody");
-    tbody.innerHTML = `<tr><td colspan="11" class="text-center loading-msg">주문 내역을 조회 중입니다...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" class="text-center loading-msg">주문 내역을 조회 중입니다...</td></tr>`;
 
     const dateFrom = document.getElementById("orderDateFrom").value;
     const dateTo = document.getElementById("orderDateTo").value;
@@ -581,7 +581,7 @@ function renderOrdersGrid(orders) {
     tbody.innerHTML = "";
 
     if (!orders || orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" class="text-center empty-msg">조건에 해당하는 주문 내역이 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center empty-msg">조건에 해당하는 주문 내역이 없습니다.</td></tr>`;
         return;
     }
 
@@ -603,6 +603,10 @@ function renderOrdersGrid(orders) {
             ? parsedProducts.map(p => `${p.name || p.code} (${p.qty}개)`).join(", ")
             : "-";
 
+        // Calculate total order amount (like legacy app)
+        const totalPrice = parsedProducts.reduce((sum, it) => sum + (it.price * it.qty), 0);
+        const priceDisplay = totalPrice > 0 ? `₩${totalPrice.toLocaleString()}` : "₩0";
+
         const cleanAddr = (o.order_address || "").replace("<other>", " ");
         const contact = o.cus_phone || o.cus_call || "-";
 
@@ -615,6 +619,7 @@ function renderOrdersGrid(orders) {
             <td>${contact}</td>
             <td title="${cleanAddr}">${cleanAddr}</td>
             <td title="${prodSummary}"><strong>${prodSummary}</strong></td>
+            <td class="text-right font-bold" style="color: #0f4c5c;">${priceDisplay}</td>
             <td>${o.order_delivery || "-"}</td>
             <td title="${o.order_etc || ""}">${o.order_etc || "-"}</td>
             <td class="text-center action-td">
@@ -811,9 +816,16 @@ function openOrderEditModal(o) {
     items.forEach(it => {
         const pill = document.createElement("span");
         pill.className = "product-pill";
-        pill.textContent = `${it.name} (${it.code}, ${it.qty}개, ${(it.price * it.qty).toLocaleString()}원)`;
         pillsBox.appendChild(pill);
     });
+
+    const totalModalPrice = items.reduce((sum, it) => sum + (it.price * it.qty), 0);
+    const totalSpan = document.createElement("div");
+    totalSpan.style.marginTop = "8px";
+    totalSpan.style.fontWeight = "bold";
+    totalSpan.style.color = "#0f4c5c";
+    totalSpan.textContent = `총 주문 금액: ₩${totalModalPrice.toLocaleString()}원`;
+    pillsBox.appendChild(totalSpan);
 
     document.getElementById("orderDetailModal").classList.remove("hidden");
 }
@@ -862,7 +874,9 @@ function exportOrdersToExcel() {
     const statusMap = { 1: "접수대기", 2: "발송전", 3: "발송전취소", 4: "발송완료", 0: "접수대기" };
 
     const rows = currentOrdersList.map(o => {
-        const prods = parseLegacyProducts(o.product_code).map(p => `${p.name} (${p.qty}개)`).join(", ");
+        const parsedProducts = parseLegacyProducts(o.product_code);
+        const prods = parsedProducts.map(p => `${p.name} (${p.qty}개)`).join(", ");
+        const totalPrice = parsedProducts.reduce((sum, it) => sum + (it.price * it.qty), 0);
         return {
             "주문상태": statusMap[o.order_status] || "기타",
             "주문번호": o.index,
@@ -873,6 +887,7 @@ function exportOrdersToExcel() {
             "휴대전화": o.cus_phone || "",
             "배송주소": (o.order_address || "").replace("<other>", " "),
             "주문상품": prods,
+            "금액": totalPrice,
             "배송처": o.order_delivery || "",
             "비고": o.order_etc || ""
         };
