@@ -793,6 +793,11 @@ function loadDaumPostcodeScript(callback) {
 
 function openZipcodeSearch(baseInputId, detailInputId) {
     loadDaumPostcodeScript(() => {
+        const popupWidth = 460;
+        const popupHeight = 500;
+        const left = Math.max(0, (window.screen.width - popupWidth) / 2);
+        const top = Math.max(0, (window.screen.height - popupHeight) / 2);
+
         new daum.Postcode({
             oncomplete: function(data) {
                 // 1. 기본 도로명/지번 주소 선택
@@ -836,9 +841,14 @@ function openZipcodeSearch(baseInputId, detailInputId) {
                     detailInput.select();
                 }
             },
-            width: 500,
-            height: 600
-        }).open();
+            width: popupWidth,
+            height: popupHeight
+        }).open({
+            left: left,
+            top: top,
+            popupTitle: "우체국 우편번호 검색",
+            popupKey: "postcode_popup"
+        });
     });
 }
 
