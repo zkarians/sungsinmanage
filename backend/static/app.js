@@ -793,10 +793,12 @@ function loadDaumPostcodeScript(callback) {
 
 function openZipcodeSearch(baseInputId, detailInputId) {
     loadDaumPostcodeScript(() => {
-        const popupWidth = 460;
-        const popupHeight = 500;
-        const left = Math.max(0, (window.screen.width - popupWidth) / 2);
-        const top = Math.max(0, (window.screen.height - popupHeight) / 2);
+        const modal = document.getElementById("zipcodeModal");
+        const container = document.getElementById("zipcodeEmbedLayer");
+        if (!modal || !container) return;
+
+        container.innerHTML = "";
+        modal.classList.remove("hidden");
 
         new daum.Postcode({
             oncomplete: function(data) {
@@ -830,9 +832,8 @@ function openZipcodeSearch(baseInputId, detailInputId) {
                     }
                 }
 
-                // 5. 모달이 열려있다면 닫기
-                const modal = document.getElementById("zipcodeModal");
-                if (modal) modal.classList.add("hidden");
+                // 5. 모달 닫기
+                modal.classList.add("hidden");
 
                 // 6. 나머지 주소 (상세주소) 입력창으로 자동 포커스 이동!
                 const detailInput = document.getElementById(detailInputId);
@@ -841,14 +842,9 @@ function openZipcodeSearch(baseInputId, detailInputId) {
                     detailInput.select();
                 }
             },
-            width: popupWidth,
-            height: popupHeight
-        }).open({
-            left: left,
-            top: top,
-            popupTitle: "우체국 우편번호 검색",
-            popupKey: "postcode_popup"
-        });
+            width: "100%",
+            height: "100%"
+        }).embed(container);
     });
 }
 
