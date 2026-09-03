@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성신판매접수 관리자 v3.18</title>
-    <link rel="stylesheet" href="/static/style.css?v=8">
+    <link rel="stylesheet" href="/static/style.css?v=9">
     <script src="/static/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -181,11 +181,10 @@
                     <label>상태:</label>
                     <select id="orderStatusFilter">
                         <option value="all">전체 상태</option>
-                        <option value="1">1: 접수완료</option>
-                        <option value="2">2: 배송중</option>
-                        <option value="3">3: 취소</option>
-                        <option value="4">4: 반품</option>
-                        <option value="0">0: 접수대기</option>
+                        <option value="1">접수대기</option>
+                        <option value="2">발송전</option>
+                        <option value="3">발송전취소</option>
+                        <option value="4">발송완료</option>
                     </select>
                 </div>
                 <div class="filter-item">
@@ -628,6 +627,6 @@
     </div>
 </div>
 
-<script src="/static/app.js?v=8"></script>
+<script src="/static/app.js?v=9"></script>
 </body>
 </html>

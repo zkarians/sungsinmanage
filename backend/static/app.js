@@ -585,11 +585,11 @@ function renderOrdersGrid(orders) {
     }
 
     const statusLabels = {
-        0: { text: "접수대기", cls: "status-0" },
-        1: { text: "접수완료", cls: "status-1" },
-        2: { text: "배송중", cls: "status-2" },
-        3: { text: "취소", cls: "status-3" },
-        4: { text: "반품", cls: "status-4" }
+        1: { text: "접수대기", cls: "status-1" },
+        2: { text: "발송전", cls: "status-2" },
+        3: { text: "발송전취소", cls: "status-3" },
+        4: { text: "발송완료", cls: "status-4" },
+        0: { text: "접수대기", cls: "status-1" }
     };
 
     orders.forEach(o => {
@@ -618,11 +618,10 @@ function renderOrdersGrid(orders) {
             <td title="${o.order_etc || ""}">${o.order_etc || "-"}</td>
             <td class="text-center action-td">
                 <select class="status-change-select" data-id="${o.index}">
-                    <option value="1" ${o.order_status == 1 ? "selected" : ""}>접수완료</option>
-                    <option value="2" ${o.order_status == 2 ? "selected" : ""}>배송중</option>
-                    <option value="3" ${o.order_status == 3 ? "selected" : ""}>취소</option>
-                    <option value="4" ${o.order_status == 4 ? "selected" : ""}>반품</option>
-                    <option value="0" ${o.order_status == 0 ? "selected" : ""}>대기</option>
+                    <option value="1" ${o.order_status == 1 ? "selected" : ""}>접수대기</option>
+                    <option value="2" ${o.order_status == 2 ? "selected" : ""}>발송전</option>
+                    <option value="3" ${o.order_status == 3 ? "selected" : ""}>발송전취소</option>
+                    <option value="4" ${o.order_status == 4 ? "selected" : ""}>발송완료</option>
                 </select>
                 <button class="btn-sub btn-sm btn-edit-order" data-id="${o.index}">수정</button>
             </td>
@@ -749,7 +748,7 @@ function exportOrdersToExcel() {
         return;
     }
 
-    const statusMap = { 0: "접수대기", 1: "접수완료", 2: "배송중", 3: "취소", 4: "반품" };
+    const statusMap = { 1: "접수대기", 2: "발송전", 3: "발송전취소", 4: "발송완료", 0: "접수대기" };
 
     const rows = currentOrdersList.map(o => {
         const prods = parseLegacyProducts(o.product_code).map(p => `${p.name} (${p.qty}개)`).join(", ");
