@@ -1,8 +1,8 @@
-﻿@echo off
-chcp 65001 > nul
+@echo off
+title Sungshin Backend Server (Port 5000)
 echo ========================================================
-echo   성신판매접수 로컬 백엔드 서버 구동 (포트: 5000, DB: PostgreSQL)
+echo   Starting Sungshin Backend Server (Port: 5000)
 echo ========================================================
-cd /d "D:\Gemini\성신판매접수\backend"
+cd /d "%~dp0backend"
 python server.py
 pause
