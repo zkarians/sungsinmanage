@@ -1668,7 +1668,7 @@ function renderModalProducts(products) {
     tbody.innerHTML = "";
 
     if (!products || products.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center empty-msg">제품이 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center empty-msg" style="padding: 60px 0; color: #64748b; font-size: 13px;">일치하는 제품이 없습니다.</td></tr>`;
         return;
     }
 
