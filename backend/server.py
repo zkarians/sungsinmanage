@@ -212,12 +212,13 @@ async def api_create_order(request: Request):
     cus_call = data.get("cus_call", "").strip()
     cus_phone = data.get("cus_phone", "").strip()
     order_address = data.get("order_address", "").strip()
+    cus_address = data.get("cus_address", "").strip() or order_address
     order_delivery = data.get("order_delivery", "").strip()
     order_etc = data.get("order_etc", "").strip()
     items = data.get("items", [])
 
     if not cus_name or not order_address or not items:
-        return JSONResponse({"status": "error", "message": "고객명, 주소 및 주문상품은 필수 입력 항목입니다."}, status_code=400)
+        return JSONResponse({"status": "error", "message": "고객명, 배송지 주소 및 주문상품은 필수 입력 항목입니다."}, status_code=400)
 
     conn = get_db()
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -233,12 +234,17 @@ async def api_create_order(request: Request):
         existing_c = cur.fetchone()
         if existing_c:
             final_cus_code = str(existing_c["cus_code"])
+            if cus_address:
+                cur.execute("UPDATE ss_customer SET cus_address = %s WHERE cus_code = %s", (cus_address, final_cus_code))
         else:
             cur.execute("""
             INSERT INTO ss_customer (account_code, cus_name, cus_call, cus_phone, cus_address)
             VALUES (%s, %s, %s, %s, %s) RETURNING cus_code
-            """, (acc_code, cus_name, cus_call, cus_phone, order_address))
+            """, (acc_code, cus_name, cus_call, cus_phone, cus_address))
             final_cus_code = str(cur.fetchone()["cus_code"])
+    else:
+        if cus_address:
+            cur.execute("UPDATE ss_customer SET cus_address = %s WHERE cus_code = %s", (cus_address, final_cus_code))
 
     p_code_parts = []
     for it in items:

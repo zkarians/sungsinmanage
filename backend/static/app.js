@@ -185,15 +185,63 @@ function initSetOrderTab() {
         searchCustomersInline(searchInput.value.trim());
     });
 
-    // Real Daum/PostOffice Zipcode Search
-    document.getElementById("btnSearchZip").addEventListener("click", () => {
-        openZipcodeSearch("orderAddress", "orderAddressDetail");
-    });
-    document.getElementById("orderAddress").addEventListener("click", () => {
-        if (!document.getElementById("orderAddress").value) {
-            openZipcodeSearch("orderAddress", "orderAddressDetail");
-        }
-    });
+    // Real Daum/PostOffice Zipcode Search for Delivery Address
+    const btnDeliveryZip = document.getElementById("btnSearchZipDelivery");
+    if (btnDeliveryZip) {
+        btnDeliveryZip.addEventListener("click", () => {
+            openZipcodeSearch("orderDeliveryAddress", "orderDeliveryAddressDetail");
+        });
+    }
+    const delivAddrInput = document.getElementById("orderDeliveryAddress");
+    if (delivAddrInput) {
+        delivAddrInput.addEventListener("click", () => {
+            if (!delivAddrInput.value) openZipcodeSearch("orderDeliveryAddress", "orderDeliveryAddressDetail");
+        });
+        delivAddrInput.addEventListener("input", syncDeliveryToCusAddress);
+    }
+    const delivAddrDetail = document.getElementById("orderDeliveryAddressDetail");
+    if (delivAddrDetail) {
+        delivAddrDetail.addEventListener("input", syncDeliveryToCusAddress);
+    }
+
+    // Zipcode Search for Customer Address
+    const btnCusZip = document.getElementById("btnSearchZipCustomer");
+    if (btnCusZip) {
+        btnCusZip.addEventListener("click", () => {
+            openZipcodeSearch("orderCusAddress", "orderCusAddressDetail");
+        });
+    }
+
+    // Same as Delivery Checkbox
+    const chkSame = document.getElementById("checkSameAsDelivery");
+    if (chkSame) {
+        chkSame.addEventListener("change", (e) => {
+            if (e.target.checked) {
+                syncDeliveryToCusAddress();
+            } else {
+                document.getElementById("orderCusAddress").value = "";
+                document.getElementById("orderCusAddressDetail").value = "";
+            }
+        });
+    }
+
+    // No Call / Phone Checkboxes
+    const chkNoCall = document.getElementById("checkNoCusCall");
+    if (chkNoCall) {
+        chkNoCall.addEventListener("change", (e) => {
+            const inp = document.getElementById("orderCusCall");
+            if (e.target.checked) { inp.value = ""; inp.disabled = true; }
+            else { inp.disabled = false; }
+        });
+    }
+    const chkNoPhone = document.getElementById("checkNoCusPhone");
+    if (chkNoPhone) {
+        chkNoPhone.addEventListener("change", (e) => {
+            const inp = document.getElementById("orderCusPhone");
+            if (e.target.checked) { inp.value = ""; inp.disabled = true; }
+            else { inp.disabled = false; }
+        });
+    }
 
     // Product Basket Events
     document.getElementById("btnOpenProductModal").addEventListener("click", openProductModal);
@@ -218,6 +266,14 @@ function initSetOrderTab() {
     document.getElementById("btnSubmitOrder").addEventListener("click", submitOrder);
 
     makeTableResizable("basketTable", "ss_basket_col_widths");
+}
+
+function syncDeliveryToCusAddress() {
+    const chk = document.getElementById("checkSameAsDelivery");
+    if (chk && chk.checked) {
+        document.getElementById("orderCusAddress").value = document.getElementById("orderDeliveryAddress").value;
+        document.getElementById("orderCusAddressDetail").value = document.getElementById("orderDeliveryAddressDetail").value;
+    }
 }
 
 async function searchCustomersInline(query) {
@@ -254,8 +310,17 @@ function selectCustomerForOrder(c) {
 
     const rawAddr = c.cus_address || "";
     const spl = rawAddr.split("<other>");
-    document.getElementById("orderAddress").value = spl[0] || "";
-    document.getElementById("orderAddressDetail").value = spl[1] || "";
+    const base = spl[0] || "";
+    const detail = spl[1] || "";
+
+    document.getElementById("orderCusAddress").value = base;
+    document.getElementById("orderCusAddressDetail").value = detail;
+
+    // Delivery address defaults to customer address
+    document.getElementById("orderDeliveryAddress").value = base;
+    document.getElementById("orderDeliveryAddressDetail").value = detail;
+    const chkSame = document.getElementById("checkSameAsDelivery");
+    if (chkSame) chkSame.checked = true;
 
     document.getElementById("cusSearchResults").classList.add("hidden");
     document.getElementById("orderCusSearch").value = "";
@@ -349,9 +414,16 @@ function resetOrderForm() {
     document.getElementById("orderCusCode").value = "";
     document.getElementById("orderCusName").value = "";
     document.getElementById("orderCusCall").value = "";
+    document.getElementById("orderCusCall").disabled = false;
     document.getElementById("orderCusPhone").value = "";
-    document.getElementById("orderAddress").value = "";
-    document.getElementById("orderAddressDetail").value = "";
+    document.getElementById("orderCusPhone").disabled = false;
+    if (document.getElementById("checkNoCusCall")) document.getElementById("checkNoCusCall").checked = false;
+    if (document.getElementById("checkNoCusPhone")) document.getElementById("checkNoCusPhone").checked = false;
+    document.getElementById("orderDeliveryAddress").value = "";
+    document.getElementById("orderDeliveryAddressDetail").value = "";
+    document.getElementById("orderCusAddress").value = "";
+    document.getElementById("orderCusAddressDetail").value = "";
+    if (document.getElementById("checkSameAsDelivery")) document.getElementById("checkSameAsDelivery").checked = false;
     document.getElementById("orderDelivery").value = "";
     document.getElementById("orderEtc").value = "";
     basketItems = [];
@@ -363,8 +435,10 @@ async function submitOrder() {
     const cusCode = document.getElementById("orderCusCode").value.trim();
     const cusCall = document.getElementById("orderCusCall").value.trim();
     const cusPhone = document.getElementById("orderCusPhone").value.trim();
-    const addr = document.getElementById("orderAddress").value.trim();
-    const addrDetail = document.getElementById("orderAddressDetail").value.trim();
+    const delivBase = document.getElementById("orderDeliveryAddress").value.trim();
+    const delivDetail = document.getElementById("orderDeliveryAddressDetail").value.trim();
+    const cusBase = document.getElementById("orderCusAddress").value.trim();
+    const cusDetail = document.getElementById("orderCusAddressDetail").value.trim();
     const delivery = document.getElementById("orderDelivery").value.trim();
     const etc = document.getElementById("orderEtc").value.trim();
 
@@ -373,9 +447,9 @@ async function submitOrder() {
         document.getElementById("orderCusName").focus();
         return;
     }
-    if (!addr) {
-        alert("배송지 주소를 입력해주세요.");
-        document.getElementById("orderAddress").focus();
+    if (!delivBase) {
+        alert("상품 배송지 주소를 입력해주세요.");
+        document.getElementById("orderDeliveryAddress").focus();
         return;
     }
 
@@ -393,7 +467,8 @@ async function submitOrder() {
         }
     }
 
-    const fullAddress = addrDetail ? `${addr}<other>${addrDetail}` : addr;
+    const fullOrderAddress = delivDetail ? `${delivBase}<other>${delivDetail}` : delivBase;
+    const fullCusAddress = cusDetail ? `${cusBase}<other>${cusDetail}` : (cusBase || fullOrderAddress);
 
     const payload = {
         account_code: currentUser ? currentUser.account_code : 1,
@@ -401,7 +476,8 @@ async function submitOrder() {
         cus_name: cusName,
         cus_call: cusCall,
         cus_phone: cusPhone,
-        order_address: fullAddress,
+        order_address: fullOrderAddress,
+        cus_address: fullCusAddress,
         order_delivery: delivery,
         order_etc: etc,
         items: selectedItems.map(it => ({
@@ -744,6 +820,9 @@ function openZipcodeSearch(baseInputId, detailInputId) {
                 const baseInput = document.getElementById(baseInputId);
                 if (baseInput) {
                     baseInput.value = formattedAddr;
+                    if (typeof syncDeliveryToCusAddress === "function") {
+                        syncDeliveryToCusAddress();
+                    }
                 }
 
                 // 5. 모달이 열려있다면 닫기
