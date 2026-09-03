@@ -454,19 +454,42 @@ function makeTableResizable(tableId, storageKey) {
     const ths = thead.querySelectorAll("th");
     if (!ths || ths.length === 0) return;
 
-    // Load saved widths from localStorage
+    // Reset table inline styles
+    table.style.minWidth = "0px";
+    table.style.tableLayout = "fixed";
+
+    // Load saved widths
     let savedWidths = {};
     try {
         savedWidths = JSON.parse(localStorage.getItem(storageKey) || "{}");
     } catch (e) {}
 
-    // Explicitly fix every column to exact px so other columns NEVER auto-expand or shrink
+    // Ensure <colgroup> exists
+    let colgroup = table.querySelector("colgroup");
+    if (!colgroup) {
+        colgroup = document.createElement("colgroup");
+        table.insertBefore(colgroup, thead);
+    }
+    while (colgroup.children.length < ths.length) {
+        colgroup.appendChild(document.createElement("col"));
+    }
+    while (colgroup.children.length > ths.length) {
+        colgroup.removeChild(colgroup.lastChild);
+    }
+    const cols = colgroup.querySelectorAll("col");
+
+    // Initialize initial widths
     let totalWidth = 0;
     ths.forEach((th, idx) => {
-        const w = savedWidths[idx] || th.offsetWidth || 100;
+        th.removeAttribute("width");
+        let w = savedWidths[idx];
+        if (!w || w < 30) {
+            w = th.offsetWidth || 100;
+        }
         th.style.width = w + "px";
         th.style.minWidth = w + "px";
         th.style.maxWidth = w + "px";
+        if (cols[idx]) cols[idx].style.width = w + "px";
         totalWidth += w;
     });
     table.style.width = totalWidth + "px";
@@ -484,9 +507,11 @@ function makeTableResizable(tableId, storageKey) {
             const onMouseMove = (e) => {
                 const diff = e.pageX - startX;
                 const newWidth = Math.max(30, startWidth + diff);
+                
                 th.style.width = newWidth + "px";
                 th.style.minWidth = newWidth + "px";
                 th.style.maxWidth = newWidth + "px";
+                if (cols[idx]) cols[idx].style.width = newWidth + "px";
 
                 let sum = 0;
                 ths.forEach(h => sum += (parseInt(h.style.width) || h.offsetWidth));

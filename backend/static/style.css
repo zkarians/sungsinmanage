@@ -269,17 +269,13 @@ button { font-family: inherit; }
 .cti-grid-wrap { height: calc(100vh - 210px); }
 
 .data-table {
-    width: max-content;
-    min-width: 100%;
+    width: auto;
     border-collapse: collapse;
     font-size: 12px;
     table-layout: fixed;
 }
-#ordersGrid {
-    min-width: 1280px;
-}
-#ctiGrid {
-    min-width: 1050px;
+#ordersGrid, #ctiGrid, #customersGrid, #productsGrid, #accountsGrid, #modalProductsGrid, #basketTable {
+    min-width: 0 !important;
 }
 .data-table thead {
     position: sticky; top: 0; z-index: 10;
